@@ -253,17 +253,33 @@ def generate_recommendations(disease_result, growth_result):
         recs.extend(grow_map[gmain])
     # Recommend only top 5 relevant
     return recs[:5]
-
 def analyze_image(image):
-    disease = infer_disease(image)
+
+    # First detect cotton growth stage
     growth = infer_growth_stage(image)
+
+    # Stop analysis if no cotton growth stage is detected
+    if growth["main_class"] is None:
+        return {
+            "error": "No cotton plant detected",
+            "disease": None,
+            "growth": growth,
+            "recommendations": [
+                "Please upload a valid cotton crop image."
+            ]
+        }
+
+    # Continue disease analysis only for cotton crops
+    disease = infer_disease(image)
+
+    # Generate recommendations
     recs = generate_recommendations(disease, growth)
+
     return {
         "disease": disease,
         "growth": growth,
         "recommendations": recs,
     }
-
 # UTILITY: For image bounding box rendering in the frontend, also supply dimensions
 def encode_image_for_display(image):
     import base64
