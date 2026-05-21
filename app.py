@@ -564,6 +564,19 @@ def analyze_image(image):
     disease["heatmap_b64"] = grad_cam_image_b64
 
     recs = generate_recommendations(disease, growth)
+    
+    # Calculate severity (was missing)
+    severity = calculate_disease_severity(disease["health_score"])
+    
+    # Calculate yield prediction (was missing)
+    growth_stage = growth.get("main_class", "Unknown")
+    y_pred = predict_yield(disease["health_score"], growth_stage)
+    
+    # Generate advanced recommendations (was missing)
+    adv_recs = generate_advanced_recommendations(disease, growth)
+    
+    # Generate farmer insights (was missing)
+    insights = generate_farmer_insights(disease, growth)
 
     result = {
         "disease": disease,
